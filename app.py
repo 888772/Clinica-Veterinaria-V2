@@ -4,7 +4,7 @@ from mysql.connector import Error
 
 app = Flask(__name__)
 
-app.secret_key = 'sua_chave_secreta_aqui' 
+app.secret_key = 'tr4b4lh0_d3_b4nc0_d3_d4d02' 
 
 def connect_database():
     try:
@@ -82,11 +82,8 @@ def cadastrar_cliente():
 def cadastrar_pet():
 
     cnx = get_db()
-    cursor = cnx.cursor(dictionary=True)
-
-    cursor.execute("SELECT ID, Nome, CPF FROM Cliente ORDER BY Nome")
-    clientes = cursor.fetchall()
-    cursor.close()
+    cursor_post = cnx.cursor(dictionary=True)
+    cursor_get_cliente = cnx.cursor(dictionary=True)
 
     if request.method == 'POST':
         nome = request.form.get('nome')
@@ -110,16 +107,80 @@ def cadastrar_pet():
         valores = (nome, data_nascimento, especie, id_cliente)
 
         try:
-            cursor.execute(sql, valores)
+            cursor_post.execute(sql, valores)
             cnx.commit()
         except Error as err:
             return f"Erro ao cadastrar o pet: {err}", 500
         finally:
-            cursor.close()
+            cursor_post.close()
 
 ######### FAZER PARA O VETERINARIO ADICIONAR O CLIENTE PELO NOME ESCOLHENDO EM UMA CAIXA
+    cursor_get_cliente.execute("SELECT ID, Nome, CPF FROM Cliente ORDER BY Nome")
+    clientes = cursor_get_cliente.fetchall()
+    cursor_get_cliente.close()
 
-    return render_template("cadastro_pet.html")
+    return render_template("cadastro_pet.html", clientes=clientes)
+
+@app.route('/consultas/novo', methods=('POST','GET'))
+def cadastrar_consulta():
+
+    cnx = get_db()
+    cursor_post = cnx.cursor(dictionary=True)
+    cursor_get_pet = cnx.cursor(dictionary=True)
+    cursor_get_vet = cnx.cursor(dictionary=True)
+    
+    if request.method == 'POST':
+        data_consulta = request.form.get('data_consulta')
+        horas = request.form.get('horas')
+        id_pet = request.form.get('id_pet')
+        crmv = request.form.get('crmv')
+        status = request.form.get('status')
+        valor = request.form.get('valor') or 0.0
+        observacoes = request.form.get('observacoes')
+
+        if not data_consulta:
+            flash('A Data da Consulta é Obrigatoria!', 'danger')
+            return redirect(url_for('cadastro_consulta'))
+        if not horas:
+            flash('A hora é Obrigatoria!', 'danger')
+            return redirect(url_for('cadastro_consulta'))
+        if not id_pet:
+            flash('O Pet é Obrigatorio!', 'danger')
+            return redirect(url_for('cadastro_consulta'))
+        if not crmv:
+            flash('O CRMV é Obrigatorio!', 'danger')
+            return redirect(url_for('cadastro_consulta'))
+        if not status:
+            flash('O Status é Obrigatorio!', 'danger')
+            return redirect(url_for('cadastro_consulta'))
+        if not valor:
+            flash('O valor é Obrigatorio!', 'danger')
+            return redirect(url_for('cadastro_consulta'))
+        if not observacoes:
+            flash('A Observação é Obrigatoria!', 'danger')
+            return redirect(url_for('cadastro_consulta'))
+
+        sql = "INSERT INTO Consulta (Data_Consulta, Horas, Observacoes, Valor, Status_Consulta, ID_Pet, CRMV) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        
+        valores = (data_consulta, horas, observacoes, valor, status, id_pet, crmv)
+
+        try:
+            cursor_post.execute(sql, valores)
+            cnx.commit()
+        except Error as err:
+            return f"Erro ao cadastrar o pet: {err}", 500
+        finally:
+            cursor_post.close()
+    # METODO GET PARA PEGAR OS PETS E OS VETERINARIOS NO BVANCO DE DADOS PARA ADICIONAR NA LISTA DE ESCOLHAS
+    cursor_get_pet.execute("SELECT Pet.ID, Pet.Nome, Cliente.Nome as dono_nome FROM Pet JOIN Cliente ON Pet.ID_Cliente = Cliente.ID ORDER BY Pet.Nome")
+    pet_select = cursor_get_pet.fetchall()
+    cursor_get_pet.close()
+
+    cursor_get_vet.execute("SELECT CRMV, Nome, Especialidade FROM Veterinario ORDER BY Nome")
+    veterinario_select = cursor_get_vet.fetchall()
+    cursor_get_vet.close()
+
+    return render_template("cadastro_consulta.html", pets=pet_select, veterinarios=veterinario_select)
 
 if __name__ == "__main__":
     app.run(debug=True) # debug=True ativa o recarregamento automático

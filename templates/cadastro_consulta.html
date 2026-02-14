@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Consulta - Clínica Veterinária</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">VetClinic Manager</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <div class="card shadow">
+                    <div class="card-header bg-white text-success">
+                        <h4><i class="fas fa-calendar-alt"></i> Agendar Nova Consulta</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="/consultas/novo" method="POST">
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="data_consulta" class="form-label">Data *</label>
+                                    <input type="date" class="form-control" id="data_consulta" name="data_consulta"
+                                        required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="horas" class="form-label">Horário *</label>
+                                    <input type="time" class="form-control" id="horas" name="horas" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_pet" class="form-label">Pet (Paciente) *</label>
+                                    <select class="form-select" id="id_pet" name="id_pet" required>
+                                        <option value="" selected disabled>Selecione o pet...</option>
+                                        {% for pet in pets %}
+                                        <option value="{{ pet.ID }}">{{ pet.Nome }} (Dono: {{ pet.dono_nome }})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="crmv" class="form-label">Veterinário *</label>
+                                    <select class="form-select" id="crmv" name="crmv" required>
+                                        <option value="" selected disabled>Selecione o médico...</option>
+                                        {% for vet in veterinarios %}
+                                        <option value="{{ vet.CRMV }}">{{ vet.Nome }} - {{ vet.Especialidade }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="status" class="form-label">Status *</label>
+                                    <select class="form-select" id="status" name="status" required>
+                                        <option value="RESERVADA" selected>RESERVADA</option>
+                                        <option value="EM ANDAMENTO">EM ANDAMENTO</option>
+                                        <option value="CONCLUIDA">CONCLUÍDA</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="valor" class="form-label">Valor (R$)</label>
+                                    <input type="number" step="0.01" class="form-control" id="valor" name="valor"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="observacoes" class="form-label">Observações / Sintomas</label>
+                                <textarea class="form-control" id="observacoes" name="observacoes" rows="3"
+                                    placeholder="Ex: Retorno para vacina, animal com prostração..."></textarea>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="/" class="btn btn-secondary me-md-2">Cancelar</a>
+                                <button type="submit" class="btn btn-success">Confirmar Agendamento</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
