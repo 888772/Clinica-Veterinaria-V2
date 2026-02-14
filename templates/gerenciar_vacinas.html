@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Vacina - Clínica Veterinária</title>
+    <title>Gerenciamento de Vacinas - VetClinic</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -18,57 +18,81 @@
     </nav>
 
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                {% endfor %}
-                {% endif %}
-                {% endwith %}
-
-                <div class="card shadow">
-                    <div class="card-header bg-white text-success">
-                        <h4><i class="fas fa-syringe"></i> Registrar Vacina</h4>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 text-success"><i class="fas fa-plus-circle"></i> Registrar Nova Vacina</h5>
+            </div>
+            <div class="card-body">
+                <form action="/vacinas/cadastrar" method="POST" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Pet</label>
+                        <select class="form-select" name="id_pet" required>
+                            <option value="" selected disabled>Escolha o pet...</option>
+                            {% for pet in pets %}
+                            <option value="{{ pet.ID }}">{{ pet.Nome }} ({{ pet.dono_nome }})</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div class="card-body">
-                        <form action="/vacinas/cadastrar" method="POST">
-
-                            <div class="mb-3">
-                                <label for="id_pet" class="form-label">Pet (Paciente) *</label>
-                                <select class="form-select" id="id_pet" name="id_pet" required>
-                                    <option value="" selected disabled>Selecione o pet que recebeu a vacina...</option>
-                                    {% for pet in pets %}
-                                    <option value="{{ pet.ID }}">{{ pet.Nome }} (Dono: {{ pet.dono_nome }})</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="tipo" class="form-label">Tipo de Vacina *</label>
-                                    <input type="text" class="form-control" id="tipo" name="tipo"
-                                        placeholder="Ex: Antirrábica, V10, Giárdia" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="marca" class="form-label">Marca/Fabricante *</label>
-                                    <input type="text" class="form-control" id="marca" name="marca"
-                                        placeholder="Ex: Zoetis, MSD, Virbac" required>
-                                </div>
-                            </div>
-
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                                <a href="/" class="btn btn-secondary me-md-2">Cancelar</a>
-                                <button type="submit" class="btn btn-success">Registrar Vacina</button>
-                            </div>
-
-                        </form>
+                    <div class="col-md-3">
+                        <label class="form-label">Tipo/Nome da Vacina</label>
+                        <input type="text" class="form-control" name="tipo" placeholder="Ex: V10, Raiva" required>
                     </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Marca/Fabricante</label>
+                        <input type="text" class="form-control" name="marca" placeholder="Ex: Zoetis" required>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success w-100">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-secondary"><i class="fas fa-list"></i> Histórico de Vacinação</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Pet</th>
+                                <th>Espécie</th>
+                                <th>Vacina (Tipo)</th>
+                                <th>Marca</th>
+                                <th>Dono</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vacina in vacinas %}
+                            <tr>
+                                <td>{{ vacina.ID }}</td>
+                                <td><strong>{{ vacina.pet_nome }}</strong></td>
+                                <td>{{ vacina.especie }}</td>
+                                <td><span class="badge bg-info text-dark">{{ vacina.Tipo }}</span></td>
+                                <td>{{ vacina.Marca }}</td>
+                                <td>{{ vacina.dono_nome }}</td>
+                                <td class="text-center">
+                                    <form action="/vacinas/excluir/{{ vacina.ID }}" method="POST"
+                                        style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Excluir este registro de vacina?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">Nenhuma vacina registrada no
+                                    sistema.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

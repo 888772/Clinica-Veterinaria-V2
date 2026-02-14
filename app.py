@@ -121,7 +121,7 @@ def gerenciar_vacinas():
     pet_select = cursor_get_pet.fetchall()
     cursor_get_pet.close()
 
-    cursor_view.execute("SELECT v.ID, v.Tipo, v.Marca, p.Nome as pet_nome, p.Especie as especie,c.Nome as dono_nome FROM Vacina v JOIN Pet p ON v.ID_Pet = p.ID JOIN Cliente c ON p.ID_Cliente = c.ID ORDER BY v.ID DESC")
+    cursor_view.execute("SELECT v.ID, v.Tipo, v.Marca, p.Nome as pet_nome, p.Especie as especie,c.Nome as dono_nome FROM Vacina v JOIN Pet p ON v.ID_Pet = p.ID JOIN Cliente c ON p.ID_Cliente = c.ID ORDER BY v.ID ASC")
     vacinas_view = cursor_view.fetchall()
     cursor_view.close()
     
