@@ -52,7 +52,7 @@ SELECT
     C.Status_Consulta
 FROM Consulta C
 JOIN Pet P ON C.ID_Pet = P.ID
-JOIN Veterinario V ON C.ID_Veterinario = V.ID;
+JOIN Veterinario V ON C.CRMV = V.CRMV;
 
 SELECT 
     P.Nome AS Pet,
@@ -73,5 +73,5 @@ SELECT
     V.Nome,
     COUNT(C.ID) AS Total_Consultas
 FROM Veterinario V
-LEFT JOIN Consulta C ON V.ID = C.ID_Veterinario
+LEFT JOIN Consulta C ON V.CRMV = C.CRMV
 GROUP BY V.Nome;
