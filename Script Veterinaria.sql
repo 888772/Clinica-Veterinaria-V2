@@ -1,3 +1,4 @@
+-- drop database clinica_veterianria;
 create database clinica_veterianria;
 use clinica_veterianria;
 
@@ -18,6 +19,8 @@ create table Pet(
     ID_Cliente INT,
     FOREIGN KEY (ID_Cliente)
     REFERENCES Cliente(ID)
+    on delete set null
+    on update cascade
 );
 
 create table Vacina(
@@ -27,6 +30,8 @@ create table Vacina(
     ID_Pet INT,
     FOREIGN KEY (ID_Pet)
     REFERENCES Pet(ID)
+    on delete set null
+    on update cascade
 );
 
 create table Veterinario(
