@@ -15,7 +15,7 @@ Este software foi desenvolvido como um projeto prático unindo lógica de backen
 
 ## 🚀 Tecnologias Utilizadas
 
-* **Linguagem:** [Python 3.x](https://www.python.org/)
+* **Linguagem:** [Python 3.13.11](https://www.python.org/)
 * **Framework Web:** [Flask](https://flask.palletsprojects.com/)
 * **Banco de Dados:** [MySQL](https://www.mysql.com/) (Consultas SQL puras).
 * **Interface:** [Bootstrap 5.3](https://getbootstrap.com/) & [FontAwesome](https://fontawesome.com/).
