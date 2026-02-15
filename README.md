@@ -62,6 +62,15 @@ templates/
 ├── gerenciar_vacinas.html      # Histórico Geral de Vacinação
 └── cadastro_vacinas.html       # Registro de aplicação de Vacina 
 ```
+## 🖼️ Imagens do Projeto:
+
+<img width="1919" height="933" alt="Screenshot_1" src="https://github.com/user-attachments/assets/fb5001d0-59e8-4c77-a99e-7eeaa5735043" />
+<img width="1919" height="933" alt="Screenshot_2" src="https://github.com/user-attachments/assets/9855b8bf-45ca-4a1c-9c20-c1fd3a0a38bd" />
+<img width="1919" height="932" alt="Screenshot_3" src="https://github.com/user-attachments/assets/9eee1471-f564-478c-9359-3beb779bc812" />
+<img width="1919" height="933" alt="Screenshot_4" src="https://github.com/user-attachments/assets/50bfad8f-d4b1-4dbc-90f5-83fd4f92f694" />
+<img width="1919" height="929" alt="Screenshot_5" src="https://github.com/user-attachments/assets/46bf2c3d-9117-44e7-9d8a-12000854d110" />
+
+
 ## 🛠️ Como Executar o Projeto
 **Clone o repositório:**
 
