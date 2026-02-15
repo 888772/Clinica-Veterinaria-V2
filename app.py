@@ -127,6 +127,30 @@ def gerenciar_vacinas():
     
     return render_template("gerenciar_vacinas.html", pets=pet_select, vacinas=vacinas_view)
 
+@app.route('/consultas')
+def consultas():
+    cnx = get_db()
+    cursor = cnx.cursor(dictionary=True)
+
+    cursor.execute("""SELECT 
+            c.ID, 
+            c.Data_Consulta, 
+            c.Horas, 
+            c.Status_Consulta, 
+            c.Valor, 
+            p.Nome as pet_nome, 
+            cl.Nome as dono_nome, 
+            v.Nome as vet_nome
+        FROM Consulta c
+        LEFT JOIN Pet p ON c.ID_Pet = p.ID
+        LEFT JOIN Cliente cl ON p.ID_Cliente = cl.ID
+        LEFT JOIN Veterinario v ON c.CRMV = v.CRMV
+        ORDER BY c.Data_Consulta DESC, c.Horas DESC""")
+    consultas = cursor.fetchall()
+    cursor.close()
+
+    return render_template('consultas.html', consultas=consultas)
+
 ##### (CADASTROS) #####
 
 @app.route('/clientes/novo', methods=['GET', 'POST'])
@@ -153,7 +177,7 @@ def cadastrar_cliente():
             flash('Endereço é obrigatório!', 'danger')
             return render_template("cadastro_cliente.html")
 
-        cursor = cnx.cursor()
+        cursor = cnx.cursor(dictionary=True)
 
         sql = "INSERT INTO Cliente (Nome, Endereco, Telefone, Email, CPF) VALUES (%s, %s, %s, %s, %s)"
 
@@ -316,7 +340,7 @@ def cadastrar_vacina():
     marca = request.form.get('marca')
 
     cnx = get_db()
-    cursor = cnx.cursor()
+    cursor = cnx.cursor(dictionary=True)
 
     sql = "INSERT INTO Vacina (Marca, Tipo, ID_Pet) VALUES (%s, %s, %s)"
 
@@ -337,7 +361,7 @@ def cadastrar_vacina():
 @app.route('/vacinas/excluir/<int:id>', methods=['POST'])
 def excluir_vacina(id):
     cnx = get_db()
-    cursor = cnx.cursor()
+    cursor = cnx.cursor(dictionary=True)
     try:
         sql = "DELETE FROM Vacina WHERE ID = %s LIMIT 1"
         cursor.execute(sql, (id,))
@@ -523,7 +547,6 @@ def editar_veterinario(id):
         
     return render_template('editar_veterinario.html', vet=vet)
 
-# 4. EXCLUIR VETERINÁRIO
 @app.route('/veterinarios/excluir/<int:id>', methods=['POST'])
 def excluir_veterinario(id):
 
@@ -540,6 +563,97 @@ def excluir_veterinario(id):
         flash(f'Erro ao excluir: {str(e)}', 'danger')
         
     return redirect(url_for('veterinarios'))
+
+@app.route('/consultas/excluir/<int:id>', methods=['POST'])
+def excluir_consulta(id):
+
+    cnx = get_db()
+    cursor = cnx.cursor(dictionary=True)
+
+    try:
+        sql = "DELETE FROM Consulta WHERE ID = %s"
+        cursor.execute(sql, (id,))
+        cnx.commit()
+        flash('Agendamento excluído/cancelado com sucesso.', 'success')
+    except Exception as e:
+        cnx.rollback()
+        flash(f'Erro ao excluir consulta: {str(e)}', 'danger')
+        
+    return redirect(url_for('consultas'))
+
+@app.route('/consultas/editar/<int:id>', methods=['GET', 'POST'])
+def editar_consulta(id):
+
+    cnx = get_db()
+    cursor = cnx.cursor(dictionary=True)
+    cursor_get_consultas = cnx.cursor(dictionary=True)
+    cursor_get_pets = cnx.cursor(dictionary=True)
+    cursor_get_vet = cnx.cursor(dictionary=True)
+
+    if request.method == 'POST':
+        data_consulta = request.form.get('data_consulta')
+        horas = request.form.get('horas')
+        id_pet = request.form.get('id_pet') or None
+        crmv = request.form.get('crmv') or None
+        status = request.form.get('status')
+        valor = request.form.get('valor') or 0.0
+        observacoes = request.form.get('observacoes')
+
+        try:
+            sql = """
+                UPDATE Consulta 
+                SET Data_Consulta = :data, 
+                    Horas = :hora, 
+                    ID_Pet = :pet, 
+                    CRMV = :crmv, 
+                    Status_Consulta = :status, 
+                    Valor = :valor, 
+                    Observacoes = :obs
+                WHERE ID = :id
+            """
+
+            valores = (data_consulta, horas, id_pet, crmv, status, valor, observacoes)
+
+            cursor.execute(sql, valores)
+            cnx.commit()
+            flash('Agendamento/Consulta atualizado com sucesso!', 'success')
+            return redirect(url_for('listar_consultas'))
+            
+        except Exception as e:
+            cnx.rollback()
+            flash(f'Erro ao atualizar consulta: {str(e)}', 'danger')
+            return redirect(url_for('listar_consultas'))
+
+    # ===== LÓGICA DO GET =====
+    
+    # 1. Buscar a consulta atual
+    cursor_get_consultas.execute("SELECT * FROM Consulta WHERE ID = %s", (id,))
+    consulta = cursor_get_consultas.fetchone()
+    cursor_get_consultas.close()
+    
+    if not consulta:
+        flash('Consulta não encontrada!', 'danger')
+        return redirect(url_for('listar_consultas'))
+        
+    # 2. Buscar lista de Pets para o dropdown
+    pets_query = """
+        SELECT p.ID, p.Nome, c.Nome as dono_nome 
+        FROM Pet p 
+        LEFT JOIN Cliente c ON p.ID_Cliente = c.ID 
+        ORDER BY p.Nome
+    """
+    cursor_get_pets.execute(pets_query)
+    pets = cursor_get_pets.fetchall()
+    cursor_get_pets.close()
+    
+    # 3. Buscar lista de Veterinários para o dropdown
+    vets_query = "SELECT CRMV, Nome, Especialidade FROM Veterinario ORDER BY Nome"
+    cursor_get_vet.execute(vets_query)
+    veterinarios = cursor_get_vet.fetchall()
+    cursor_get_vet.close()
+    
+    return render_template('editar_consulta.html', consulta=consulta, pets=pets, veterinarios=veterinarios)
+
 
 if __name__ == "__main__":
     app.run(debug=True) # debug=True ativa o recarregamento automático
