@@ -1,7 +1,6 @@
 
-==============================
-README IN (ENGLISH)
-==============================
+
+**README IN (ENGLISH)**
 
 # 🐾 VetClinic Manager
 
@@ -125,9 +124,7 @@ Commercial use, redistribution, modification for redistribution, or claiming aut
 
 ---
 
-==============================
-README EM (PORTUGUÊS – BR)
-==============================
+**README EM (PORTUGUÊS – BR)**
 
 # 🐾 VetClinic Manager
 
