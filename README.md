@@ -95,5 +95,14 @@ Certifique-se de que a string de conexão no app.py está correta.
 Bash
 python app.py ou flask run
 
+## License
+
+This project is licensed under a proprietary educational license.
+
+The source code is available for study and learning purposes only.
+Commercial use, redistribution, modification for redistribution,
+or claiming authorship is not permitted without explicit authorization
+from the author.
+
 Desenvolvido por José Guilherme Lima Ferreira
 Design e Templates fornecidos por Gemini AI
