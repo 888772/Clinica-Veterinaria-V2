@@ -602,27 +602,27 @@ def editar_consulta(id):
         try:
             sql = """
                 UPDATE Consulta 
-                SET Data_Consulta = :data, 
-                    Horas = :hora, 
-                    ID_Pet = :pet, 
-                    CRMV = :crmv, 
-                    Status_Consulta = :status, 
-                    Valor = :valor, 
-                    Observacoes = :obs
-                WHERE ID = :id
+                SET Data_Consulta = %s, 
+                    Horas = %s, 
+                    ID_Pet = %s, 
+                    CRMV = %s, 
+                    Status_Consulta = %s, 
+                    Valor = %s, 
+                    Observacoes = %s
+                WHERE ID = %s
             """
 
-            valores = (data_consulta, horas, id_pet, crmv, status, valor, observacoes)
+            valores = (data_consulta, horas, id_pet, crmv, status, valor, observacoes, id)
 
             cursor.execute(sql, valores)
             cnx.commit()
             flash('Agendamento/Consulta atualizado com sucesso!', 'success')
-            return redirect(url_for('listar_consultas'))
+            return redirect(url_for('consultas'))
             
         except Exception as e:
             cnx.rollback()
             flash(f'Erro ao atualizar consulta: {str(e)}', 'danger')
-            return redirect(url_for('listar_consultas'))
+            return redirect(url_for('consultas'))
 
     # ===== LÓGICA DO GET =====
     
