@@ -85,7 +85,7 @@ templates/
 ### Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/vetclinic-manager.git
+git clone https://github.com/888772/Clinica-Veterinaria-V2.git
 ```
 
 ### Install the required dependencies:
@@ -203,7 +203,7 @@ templates/
 **Clone o repositório:**
 
 Bash
-git clone [https://github.com/seu-usuario/vetclinic-manager.git](https://github.com/seu-usuario/vetclinic-manager.git)
+git clone [https://github.com/888772/Clinica-Veterinaria-V2.git](https://github.com/888772/Clinica-Veterinaria-V2.git)
 
 **Instale as dependências necessárias:**
 
